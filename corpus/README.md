@@ -1,0 +1,1 @@
+This is a tiny directoy of text documents for us to index and search over.
