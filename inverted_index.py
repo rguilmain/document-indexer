@@ -36,7 +36,7 @@ class Index:
             for line in f_in:
                 for term in line.strip().split():
                     term_counts[term] += 1
-        for term, count in term_counts.most_common():
+        for term, count in term_counts.items():
             self.index[term].append((doc_name, count))
         self.doc_lengths[doc_name] = sum(term_counts.values())
 
