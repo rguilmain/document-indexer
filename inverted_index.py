@@ -19,6 +19,7 @@ class Index:
     def __init__(self):
         self.index = defaultdict(list)
         self.doc_lengths = {}
+        self.total_tokens_indexed = 0
 
     @property
     def num_docs(self) -> int:
@@ -26,7 +27,7 @@ class Index:
 
     @property
     def avg_doc_len(self) -> float:
-        return sum(self.doc_lengths.values()) / self.num_docs
+        return self.total_tokens_indexed / self.num_docs
 
     def index_document(self, filepath: str) -> None:
         doc_name, _ = os.path.splitext(os.path.basename(filepath))
@@ -38,7 +39,9 @@ class Index:
                     term_counts[term] += 1
         for term, count in term_counts.items():
             self.index[term].append((doc_name, count))
-        self.doc_lengths[doc_name] = sum(term_counts.values())
+        doc_length = sum(term_counts.values())
+        self.doc_lengths[doc_name] = doc_length
+        self.total_tokens_indexed += doc_length
 
     def index_directory(self, directory: str) -> None:
         num_indexed = 0
@@ -53,11 +56,11 @@ class Index:
 
     def save_to_file(self, filepath: str) -> None:
         print(f'writing index to {filepath}...')
-        pickle.dump((self.index, self.doc_lengths), open(filepath, 'wb'))
+        pickle.dump((self.index, self.doc_lengths, self.total_tokens_indexed), open(filepath, 'wb'))
 
     def load_from_file(self, filepath: str) -> None:
         print(f'loading index from {filepath}...')
-        self.index, self.doc_lengths = pickle.load(open(filepath, 'rb'))
+        self.index, self.doc_lengths, self.total_tokens_indexed = pickle.load(open(filepath, 'rb'))
 
     def display(self) -> None:
         print('index contents:')
